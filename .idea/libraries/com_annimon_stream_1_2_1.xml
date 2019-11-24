@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="com.annimon:stream:1.2.1" type="repository">
+    <properties maven-id="com.annimon:stream:1.2.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/annimon/stream/1.2.1/stream-1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
