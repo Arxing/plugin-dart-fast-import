@@ -1,6 +1,10 @@
 package org.arxing.impl;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.net.URI;
+import java.util.List;
 
 public class LibTarget {
     private LibType type;
@@ -23,6 +27,24 @@ public class LibTarget {
 
     public static LibTarget ofFile(URI uri) {
         return new LibTarget(LibType.file, null, uri);
+    }
+
+    private String backPath(String path) {
+        List<String> splits = Stream.of(path.split("/")).toList();
+        splits = Stream.of(splits).limit(splits.size() - 1).toList();
+        return Stream.of(splits).collect(Collectors.joining("/"));
+    }
+
+    public String backTarget() {
+        switch (type) {
+            case dart:
+                return "dart:";
+            case packages:
+                return "package:" + pkgName + "/" + backPath(uri.getPath());
+            case file:
+                return backPath(uri.getPath());
+        }
+        return null;
     }
 
     @Override public String toString() {

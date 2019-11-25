@@ -2,6 +2,7 @@ package org.arxing.impl;
 
 import org.arxing.DependencyAnalyzer;
 
+import com.annimon.stream.Stream;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private Project project;
     private Map<String, LibInfo> libs = new HashMap<>();
-    private List<String> dependenciesCache = new ArrayList<>();
+    private List<LibTarget> dependenciesCache = new ArrayList<>();
     private static String[] dartPackages = {
             "typed_data", "io", "collection", "convert", "async", "developer", "ffi", "isolate", "math", "nativewrappers", "ui", "core",
     };
@@ -27,7 +28,7 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
         this.project = project;
     }
 
-    @Override public List<String> filterDependencies(String target) {
+    @Override public List<LibTarget> getDependencies() {
         return dependenciesCache;
     }
 
@@ -58,9 +59,6 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
             libs.put(dartPackage, new LibInfo(dartPackage, null, LibType.dart));
         }
         dependenciesCache.clear();
-        dependenciesCache.sort(String::compareTo);
-//        dependenciesCache.addAll(libs.values().stream().flatMap(libInfo -> libInfo.getAllTargets().stream()).collect(Collectors.toList()));
-
-        Messages.showMessageDialog(dependenciesCache.stream().collect(Collectors.joining("\n")), "t", null);
+        dependenciesCache.addAll(Stream.of(libs.values()).flatMap(info -> Stream.of(info.getAllTargets())).toList());
     }
 }
