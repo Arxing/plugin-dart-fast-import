@@ -33,6 +33,7 @@ public class Main {
         mainDialog.updateDependencies();
         mainDialog.setVisible(true);
         mainDialog.focusComboBox();
+        mainDialog.attachCenter();
 
 
     }

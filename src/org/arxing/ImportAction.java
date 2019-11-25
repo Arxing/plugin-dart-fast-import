@@ -57,6 +57,7 @@ public class ImportAction extends AnAction {
                 file.refresh(false, false);
             });
             mainDialog.setVisible(true);
+            mainDialog.attachCenter();
         } catch (Throwable e1) {
             Messages.showErrorDialog(Stream.of(Arrays.asList(e1.getStackTrace()))
                                            .map(StackTraceElement::toString)

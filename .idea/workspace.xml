@@ -3,14 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="73a62448-40e3-45b6-b842-994133d6a1ec" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dart-fast-import.zip" beforeDir="false" afterPath="$PROJECT_DIR$/dart-fast-import.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dart-fast-import/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dart-fast-import/META-INF/plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dart-fast-import/org/arxing/ui/MainDialog.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dart-fast-import/org/arxing/ui/MainDialog.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/META-INF/plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/META-INF/plugin.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/arxing/AutoCompleteComboBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/AutoCompleteComboBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/arxing/DependencyAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/DependencyAnalyzer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/arxing/ImportAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/ImportAction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/arxing/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/arxing/impl/DependencyAnalyzerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/impl/DependencyAnalyzerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/arxing/impl/LibTarget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/impl/LibTarget.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -31,8 +28,8 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/arxing/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="34" column="35" lean-forward="true" selection-start-line="34" selection-start-column="35" selection-end-line="34" selection-end-column="35" />
+            <state relative-caret-position="535">
+              <caret line="35" column="25" lean-forward="true" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -55,11 +52,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainDialog.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainDialog.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2114">
-              <caret line="110" column="34" lean-forward="true" selection-start-line="110" selection-start-column="34" selection-end-line="110" selection-end-column="34" />
+            <state relative-caret-position="198">
+              <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -67,11 +64,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+            <state relative-caret-position="462">
+              <caret line="33" column="82" lean-forward="true" selection-start-line="33" selection-start-column="82" selection-end-line="33" selection-end-column="82" />
             </state>
           </provider>
         </entry>
@@ -79,8 +76,8 @@
       <file leaf-file-name="ImportAction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/arxing/ImportAction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="55">
-              <caret line="32" column="31" lean-forward="true" selection-start-line="32" selection-start-column="31" selection-end-line="32" selection-end-column="31" />
+            <state relative-caret-position="363">
+              <caret line="40" column="67" lean-forward="true" selection-start-line="40" selection-start-column="67" selection-end-line="40" selection-end-column="67" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -135,12 +132,12 @@
         <option value="$PROJECT_DIR$/src/org/arxing/impl/LibTarget.java" />
         <option value="$PROJECT_DIR$/src/org/arxing/DependencyAnalyzer.java" />
         <option value="$PROJECT_DIR$/src/org/arxing/impl/DependencyAnalyzerImpl.java" />
-        <option value="$PROJECT_DIR$/src/org/arxing/Main.java" />
         <option value="$PROJECT_DIR$/src/org/arxing/ui/ConfirmListener.java" />
-        <option value="$PROJECT_DIR$/src/org/arxing/ImportAction.java" />
         <option value="$PROJECT_DIR$/src/org/arxing/AutoCompleteComboBox.java" />
-        <option value="$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java" />
         <option value="$PROJECT_DIR$/resources/META-INF/plugin.xml" />
+        <option value="$PROJECT_DIR$/src/org/arxing/ImportAction.java" />
+        <option value="$PROJECT_DIR$/src/org/arxing/Main.java" />
+        <option value="$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java" />
       </list>
     </option>
   </component>
@@ -161,8 +158,8 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="46" />
-    <option name="y" value="95" />
+    <option name="x" value="100" />
+    <option name="y" value="271" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
   </component>
@@ -363,12 +360,12 @@
       <workItem from="1574353537751" duration="1735000" />
       <workItem from="1574355473907" duration="19720000" />
       <workItem from="1574545437584" duration="18957000" />
-      <workItem from="1574690469638" duration="17865000" />
+      <workItem from="1574690469638" duration="18394000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62825000" />
+    <option name="totallyTimeSpent" value="63354000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -376,7 +373,7 @@
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.23042506" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.22956327" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
@@ -384,18 +381,18 @@
       <window_info anchor="right" id="Maven Projects" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.20268758" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.20268758" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17750533" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17750533" />
       <window_info anchor="right" id="Database" order="4" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="4" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.24049217" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3706607" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Coverage" order="5" side_tool="true" weight="0.32995737" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -413,7 +410,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="4" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -677,13 +674,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/arxing/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="34" column="35" lean-forward="true" selection-start-line="34" selection-start-column="35" selection-end-line="34" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/lib/platform-api.jar!/com/intellij/openapi/project/Project.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="431">
@@ -695,16 +685,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
           <caret line="487" column="25" selection-start-line="487" selection-start-column="25" selection-end-line="487" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/arxing/ImportAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="55">
-          <caret line="32" column="31" lean-forward="true" selection-start-line="32" selection-start-column="31" selection-end-line="32" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -756,20 +736,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java">
+    <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2114">
-          <caret line="110" column="34" lean-forward="true" selection-start-line="110" selection-start-column="34" selection-end-line="110" selection-end-column="34" />
+        <state relative-caret-position="462">
+          <caret line="33" column="82" lean-forward="true" selection-start-line="33" selection-start-column="82" selection-end-line="33" selection-end-column="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/arxing/ImportAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="40" column="67" lean-forward="true" selection-start-line="40" selection-start-column="67" selection-end-line="40" selection-end-column="67" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/META-INF/plugin.xml">
+    <entry file="file://$PROJECT_DIR$/src/org/arxing/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+        <state relative-caret-position="535">
+          <caret line="35" column="25" lean-forward="true" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/arxing/ui/MainDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

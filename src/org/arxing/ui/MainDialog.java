@@ -12,6 +12,7 @@ import org.jdesktop.swingx.VerticalLayout;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -48,6 +49,11 @@ public class MainDialog extends JFrame {
         setTitle("FastImport");
         setAlwaysOnTop(true);
         pack();
+    }
+
+    public void attachCenter(){
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation(dim.width / 2 - getSize().width / 2, dim.height / 2 - getSize().height / 2);
     }
 
     public void setListener(ConfirmListener listener) {
@@ -107,7 +113,7 @@ public class MainDialog extends JFrame {
 
         JPanel middlePanel = new JPanel(new VerticalLayout());
         JButton ok = new JButton("OK");
-        ok.setPreferredSize(new Dimension(50,30));
+        ok.setPreferredSize(new Dimension(50, 30));
         middlePanel.add(comboBox);
         middlePanel.add(ok, null);
         ok.addActionListener(e -> comboBox.notifyOk());

@@ -29,7 +29,7 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="DartFastImport.ImportAction" class="org.arxing.ImportAction" text="dart fast import">
+        <action id="DartFastImport.ImportAction" class="org.arxing.ImportAction" text="Dart Fast Import">
             <add-to-group group-id="EditMenu" anchor="first"/>
             <keyboard-shortcut first-keystroke="$default" keymap="ctrl shift F1"/>
         </action>
