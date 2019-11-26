@@ -1,19 +1,18 @@
 package org.arxing.impl;
 
-import org.arxing.DependencyAnalyzer;
-
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+
+import org.arxing.DependencyAnalyzer;
 
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private static String[] dartPackages = {
@@ -21,25 +20,26 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     };
     private Project project;
     private List<LibInfo> libs = new ArrayList<>();
-    private List<LibTarget> dependenciesCache = new ArrayList<>();
+    private Set<LibTarget> dependenciesCache = new HashSet<>();
 
     public DependencyAnalyzerImpl(Project project) {
         this.project = project;
     }
 
-    @Override public List<LibTarget> getDependencies(String keyword) {
-        return Stream.of(dependenciesCache).filter(target -> {
-            if (keyword == null || keyword.isEmpty())
-                return true;
+    private Predicate<LibTarget> keywordFilter(String keyword) {
+        return target -> {
             return target.toString().contains(keyword);
-        }).toList();
+        };
+    }
+
+    @Override public List<LibTarget> getDependencies(String keyword) {
+        if (keyword == null || keyword.isEmpty())
+            return Stream.of(dependenciesCache).toList();
+        return Stream.of(dependenciesCache).filter(keywordFilter(keyword)).toList();
     }
 
     @Override public void updateDependencies() throws Exception {
-        List<String> lines = FileUtil.loadLines(getPackagesFilePath())
-                                     .stream()
-                                     .filter(line -> !line.startsWith("#"))
-                                     .collect(Collectors.toList());
+        List<String> lines = Stream.of(FileUtil.loadLines(getPackagesFilePath())).filter(line -> !line.startsWith("#")).toList();
         libs.clear();
         for (String line : lines) {
             String[] splits = line.split(":", 2);
@@ -62,7 +62,6 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
         }
         dependenciesCache.clear();
         dependenciesCache.addAll(Stream.of(libs).flatMap(info -> Stream.of(info.getAllTargets())).toList());
-        dependenciesCache.sort(Comparator.naturalOrder());
     }
 
     private String getPackagesFilePath() {
@@ -73,18 +72,10 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
         if (project != null)
             return project.getBasePath();
         else
-            return "W:\\flutter\\e7_backend";
+            return "W:\\flutter\\Platform51App-Core";
     }
 
-    /**
-     * 根據關鍵字 動態的從緩存的庫中搜尋出匹配的目標
-     *
-     * @param keyword
-     * @return
-     */
-    @Override public List<LibTarget> matchTargets(String keyword) {
-        List<LibTarget> targets = new ArrayList<>();
-
-        return null;
+    @Override public void putExtraDependencies(List<LibTarget> extras) {
+        dependenciesCache.addAll(extras);
     }
 }

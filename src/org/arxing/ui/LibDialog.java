@@ -120,10 +120,8 @@ public class LibDialog extends JFrame {
 
     private LibComboBox.LibComboBoxCallback comboBoxCallback = new LibComboBox.LibComboBoxCallback() {
 
-        @Override public void onTargetSelected(LibTarget target) {
-            List<LibTarget> recommends = target.getRelationTargets();
-            Printer.print("選取的物件: %s", target.toString());
-            comboBox.updateModels(recommends);
+        @Override public void onFindExtras(List<LibTarget> extras) {
+            dependencyAnalyzer.putExtraDependencies(extras);
         }
 
         @Override public void onKeywordChanged(String keyword) {

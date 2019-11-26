@@ -20,5 +20,5 @@ public interface DependencyAnalyzer {
 
     String getProjectRootPath();
 
-    List<LibTarget> matchTargets(String keyword);
+    void putExtraDependencies(List<LibTarget> extras);
 }

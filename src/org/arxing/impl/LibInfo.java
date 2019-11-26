@@ -1,14 +1,16 @@
 package org.arxing.impl;
 
+import com.annimon.stream.Stream;
+
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LibInfo {
-    String pkgName;
-    File libRootFile;
-    LibType type;
+    private String pkgName;
+    private File libRootFile;
+    private LibType type;
 
     public LibInfo(String libName, File rootFile, LibType type) {
         this.pkgName = libName;
@@ -31,30 +33,28 @@ public class LibInfo {
     }
 
     private void visitChildInternal(List<LibTarget> result, boolean recursive, File currentFile) {
-        //                System.out.println("拜訪:" + currentFile.toPath());
         resolveTarget(result, currentFile);
         if (currentFile.isDirectory()) {
-            if (recursive) {
-                for (File file : currentFile.listFiles()) {
-                    visitChildInternal(result, recursive, file);
-                }
-            } else {
-                for (File file : currentFile.listFiles()) {
-                    resolveTarget(result, file);
-                }
-            }
+            Stream.ofNullable(currentFile.listFiles())
+                  .filter(file -> file.isDirectory() || (file.isFile() && file.getName().endsWith(".dart")))
+                  .forEach(file -> {
+                      if (recursive)
+                          visitChildInternal(result, recursive, file);
+                      else
+                          resolveTarget(result, file);
+                  });
         }
     }
 
     private void resolveTarget(List<LibTarget> result, File file) {
-        URI absoluteUri = libRootFile.toURI();
-        URI relativeUri = absoluteUri.relativize(file.toURI());
+        URI libRootUri = libRootFile.toURI();
+        URI relativeUri = libRootUri.relativize(file.toURI());
         switch (type) {
             case file:
-                LibTarget fileTarget = LibTarget.ofFile(this, relativeUri, absoluteUri, file.isDirectory());
+                LibTarget fileTarget = LibTarget.ofFile(this, libRootUri, relativeUri, libRootUri, file.isDirectory());
                 result.add(fileTarget);
             case packages:
-                LibTarget pkgTarget = LibTarget.ofPackage(this, pkgName, relativeUri, absoluteUri, file.isDirectory());
+                LibTarget pkgTarget = LibTarget.ofPackage(this, pkgName, libRootUri, relativeUri, libRootUri, file.isDirectory());
                 result.add(pkgTarget);
                 break;
         }
