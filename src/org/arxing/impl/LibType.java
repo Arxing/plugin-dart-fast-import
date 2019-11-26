@@ -1,7 +1,7 @@
 package org.arxing.impl;
 
 public enum LibType {
-    dart,
+    file,
     packages,
-    file
+    dart,;
 }

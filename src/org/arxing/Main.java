@@ -1,6 +1,8 @@
 package org.arxing;
 
-import org.arxing.ui.MainDialog;
+import org.arxing.ui.LibDialog;
+
+import javax.swing.WindowConstants;
 
 public class Main {
 
@@ -29,12 +31,21 @@ public class Main {
         //        List<String> children = libInfo.getAllTargets();
         //        System.out.println(children.stream().collect(Collectors.joining("\n")));
         //
-        MainDialog mainDialog = new MainDialog(null, null, true);
-        mainDialog.updateDependencies();
-        mainDialog.setVisible(true);
-        mainDialog.focusComboBox();
-        mainDialog.attachCenter();
 
+//        MainDialog mainDialog = new MainDialog(null, null, true);
+//        mainDialog.updateDependencies();
+//        mainDialog.setVisible(true);
+//        mainDialog.focusComboBox();
+//        mainDialog.attachCenter();
+
+        LibDialog libDialog = new LibDialog(null);
+        libDialog.setCallback(new LibDialog.LibDialogCallback() {
+            @Override public void confirm(ImportsType importsType, String path) {
+                Printer.print("* 確認選擇了: %s %s", importsType.getOption(), path);
+            }
+        });
+        libDialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        libDialog.setVisible(true);
 
     }
 }

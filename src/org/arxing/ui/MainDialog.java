@@ -3,7 +3,6 @@ package org.arxing.ui;
 import com.annimon.stream.Stream;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ui.JBUI;
 
 import org.arxing.AutoCompleteComboBox;
 import org.arxing.DependencyAnalyzer;
@@ -13,8 +12,6 @@ import org.jdesktop.swingx.VerticalLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +48,7 @@ public class MainDialog extends JFrame {
         pack();
     }
 
-    public void attachCenter(){
+    public void attachCenter() {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation(dim.width / 2 - getSize().width / 2, dim.height / 2 - getSize().height / 2);
     }
@@ -64,13 +61,9 @@ public class MainDialog extends JFrame {
     }
 
     public void updateDependencies() throws Exception {
-        if (debug) {
-            comboBox.updateSource(Arrays.asList(LibTarget.ofDart("io"), LibTarget.ofDart("convert")));
-        } else {
-            dependencyAnalyzer.updateDependencies();
-            List<LibTarget> targets = dependencyAnalyzer.getDependencies();
-            comboBox.updateSource(targets);
-        }
+        dependencyAnalyzer.updateDependencies();
+        List<LibTarget> targets = dependencyAnalyzer.getDependencies(null);
+        comboBox.updateSource(targets);
     }
 
     public void focusComboBox() {

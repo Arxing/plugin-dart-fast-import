@@ -20,43 +20,43 @@ public class LibInfo {
         List<LibTarget> result = new ArrayList<>();
         switch (type) {
             case dart:
-                result.add(LibTarget.ofDart(pkgName));
+                result.add(LibTarget.ofDart(this, pkgName));
                 break;
             case packages:
             case file:
-                visitChildInternal(result, true, libRootFile);
+                visitChildInternal(result, false, libRootFile);
                 break;
         }
         return result;
     }
 
     private void visitChildInternal(List<LibTarget> result, boolean recursive, File currentFile) {
-        //        System.out.println("拜訪:" + currentFile.toPath());
-        if (currentFile.isFile()) {
-            result.add(buildTarget(currentFile));
-        } else if (currentFile.isDirectory()) {
+        //                System.out.println("拜訪:" + currentFile.toPath());
+        resolveTarget(result, currentFile);
+        if (currentFile.isDirectory()) {
             if (recursive) {
                 for (File file : currentFile.listFiles()) {
                     visitChildInternal(result, recursive, file);
                 }
             } else {
                 for (File file : currentFile.listFiles()) {
-                    LibTarget libTarget = buildTarget(file);
-                    result.add(libTarget);
+                    resolveTarget(result, file);
                 }
             }
         }
     }
 
-    private LibTarget buildTarget(File file) {
-        String relative = libRootFile.toPath().relativize(file.toPath()).toString().replace("\\", "/");
+    private void resolveTarget(List<LibTarget> result, File file) {
+        URI absoluteUri = libRootFile.toURI();
+        URI relativeUri = absoluteUri.relativize(file.toURI());
         switch (type) {
-            case packages:
-                return LibTarget.ofPackage(pkgName, URI.create(relative));
             case file:
-                return LibTarget.ofFile(URI.create(relative));
+                LibTarget fileTarget = LibTarget.ofFile(this, relativeUri, absoluteUri, file.isDirectory());
+                result.add(fileTarget);
+            case packages:
+                LibTarget pkgTarget = LibTarget.ofPackage(this, pkgName, relativeUri, absoluteUri, file.isDirectory());
+                result.add(pkgTarget);
+                break;
         }
-        throw new IllegalStateException();
     }
-
 }

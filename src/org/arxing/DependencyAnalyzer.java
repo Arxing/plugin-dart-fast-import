@@ -3,7 +3,6 @@ package org.arxing;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 
-import org.arxing.impl.LibInfo;
 import org.arxing.impl.LibTarget;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,8 +14,11 @@ public interface DependencyAnalyzer {
         return ServiceManager.getService(project, DependencyAnalyzer.class);
     }
 
-    List<LibTarget> getDependencies();
+    List<LibTarget> getDependencies(String keyword);
 
     void updateDependencies() throws Exception;
 
+    String getProjectRootPath();
+
+    List<LibTarget> matchTargets(String keyword);
 }

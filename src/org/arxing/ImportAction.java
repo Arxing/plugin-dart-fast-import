@@ -1,7 +1,6 @@
 package org.arxing;
 
 import com.annimon.stream.Collectors;
-import com.annimon.stream.IntPair;
 import com.annimon.stream.Stream;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -11,9 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 
-import org.apache.commons.io.FileUtils;
 import org.arxing.ui.MainDialog;
 
 import java.io.File;
@@ -33,7 +30,7 @@ public class ImportAction extends AnAction {
             MainDialog mainDialog = new MainDialog(project, file, false);
             mainDialog.setListener((kind, target) -> {
                 String finalTarget = kind + " '" + target + "';";
-                List<String> lines = FileUtil.loadLines(file.getPath());
+                List<String> lines = FileUtil.loadLines(file.getPath(), "utf-8");
                 int insertLine = -1;
                 switch (kind) {
                     case "import":
@@ -52,7 +49,8 @@ public class ImportAction extends AnAction {
                 }
                 if (insertLine != -1)
                     lines.add(insertLine, finalTarget);
-                FileUtils.writeLines(new File(file.getPath()), lines);
+                String newContent = Stream.of(lines).collect(Collectors.joining("\n"));
+                FileUtil.writeToFile(new File(file.getPath()), newContent);
                 mainDialog.setVisible(false);
                 file.refresh(false, false);
             });

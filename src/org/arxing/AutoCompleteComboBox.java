@@ -14,13 +14,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.ComboBoxEditor;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+import javax.swing.plaf.basic.ComboPopup;
 
 public class AutoCompleteComboBox extends JComboBox<LibTarget> {
     public JTextField inputField = null;
@@ -30,6 +35,12 @@ public class AutoCompleteComboBox extends JComboBox<LibTarget> {
     private String keyword;
     private int currentSelectedIndex = -1;
     private ConfirmListener listener;
+    private boolean moving = false;
+    private boolean confirming = false;
+
+    private static void print(String format, Object... params) {
+        System.out.println(String.format(format, params));
+    }
 
     public AutoCompleteComboBox(final List<LibTarget> src) {
         super();
@@ -37,18 +48,23 @@ public class AutoCompleteComboBox extends JComboBox<LibTarget> {
         setEditor(new BasicComboBoxEditor());
         setEditable(true);
         updateSource(src);
-        addItemListener(e -> {
-            currentSelectedIndex = getSelectedIndex();
-            updateUi();
-            if (currentSelectedIndex != -1) {
-                LibTarget target = getModel().getElementAt(currentSelectedIndex);
-                currentText = target.toString();
-                keyword = target.backTarget();
-                filter();
+
+        getPopupList().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            if (moving) {
+                if (currentSelectedIndex == getSelectedIndex())
+                    return;
+                currentSelectedIndex = getSelectedIndex();
                 updateUi();
-                currentSelectedIndex = -1;
+                print("物件選取 cur=%d", currentSelectedIndex);
             }
         });
+    }
+
+    private JList getPopupList() {
+        ComboPopup popup = (ComboPopup) getUI().getAccessibleChild(this, 0);
+        return popup.getList();
     }
 
     public String getCurrentText() {
@@ -107,28 +123,43 @@ public class AutoCompleteComboBox extends JComboBox<LibTarget> {
         if (editor.getEditorComponent() instanceof JTextField) {
             inputField = (JTextField) editor.getEditorComponent();
             inputField.addKeyListener(new KeyAdapter() {
-                @Override public void keyReleased(KeyEvent e) {
+                @Override public void keyPressed(KeyEvent e) {
                     int key = e.getKeyCode();
-                    if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN) {
-                        currentSelectedIndex = getSelectedIndex();
-                        updateUi();
-                    } else if (key == KeyEvent.VK_ENTER) {
-                        if (currentSelectedIndex != -1) {
-                            LibTarget target = getModel().getElementAt(currentSelectedIndex);
-                            currentText = target.toString();
-                            keyword = target.backTarget();
-                            filter();
-                            updateUi();
-                            currentSelectedIndex = -1;
-                        } else {
-                            notifyOk();
-                        }
-                    } else {
-                        currentText = inputField.getText();
-                        keyword = currentText;
-                        filter();
-                        updateUi();
+                    moving = false;
+                    confirming = false;
+                    switch (key) {
+                        case KeyEvent.VK_UP:
+                        case KeyEvent.VK_DOWN:
+                            moving = true;
+                            print("* 上下移動中");
+                            break;
+                        case KeyEvent.VK_ENTER:
+                            print("* 按下確認, idx=%d", currentSelectedIndex);
+                            confirming = true;
+                            if (currentSelectedIndex != -1) {
+                                LibTarget target = getModel().getElementAt(currentSelectedIndex);
+                                currentText = target.toString();
+                                keyword = target.backTarget();
+                                filter();
+                                updateUi();
+                                currentSelectedIndex = -1;
+                            } else {
+                                notifyOk();
+                            }
+                            break;
                     }
+                }
+
+                @Override public void keyReleased(KeyEvent e) {
+                    // 移動中的話略過此事件
+                    if (moving || confirming)
+                        return;
+                    String s = String.valueOf(e.getKeyChar());
+                    print("keyReleased: %s", s);
+                    currentText = inputField.getText();
+                    keyword = currentText;
+                    filter();
+                    updateUi();
                 }
             });
         }
