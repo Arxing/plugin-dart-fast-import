@@ -4,7 +4,6 @@ import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 
 import org.arxing.DependencyAnalyzer;
 import org.arxing.Settings;
@@ -20,7 +19,7 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private static String[] DART_PACKAGES = {
             "typed_data", "io", "collection", "convert", "async", "developer", "ffi", "isolate", "math", "nativewrappers", "ui", "core",
     };
-    private static String TEST_PATH_ROOT = "W:\\flutter\\platform51_core";
+    private static String TEST_PATH_ROOT = "W:\\flutter\\FlutterApp\\flutter_app";
     private Project project;
     private List<LibInfo> libs = new ArrayList<>();
     private Set<LibTarget> dependenciesCache = new HashSet<>();
@@ -33,13 +32,22 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
             settings = Settings.getInstance(project);
         } else {
             settings = new SettingsImpl(null);
-            workFilePath = "W:\\flutter\\platform51_core\\lib\\env\\core_entrance.dart";
+            workFilePath = "W:\\flutter\\FlutterApp\\flutter_app\\lib\\generated\\i18n.dart";
         }
     }
 
     private Predicate<LibTarget> keywordFilter(String keyword) {
         return target -> {
-            return target.toString().contains(keyword);
+            String s = target.toString();
+            if (s.equals(keyword))
+                return true;
+            if (s.contains(keyword))
+                return true;
+            if (keyword.matches(target.calcRegex2()))
+                return true;
+            if (keyword.matches(target.calcRegex1()))
+                return true;
+            return false;
         };
     }
 

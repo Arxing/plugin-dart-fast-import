@@ -24,6 +24,10 @@ public class LibInfo {
         return workFileUri;
     }
 
+    public URI getLibRootUri() {
+        return libRootFile.toURI();
+    }
+
     public List<LibTarget> getAllTargets(boolean recursive) {
         List<LibTarget> result = new ArrayList<>();
         switch (type) {

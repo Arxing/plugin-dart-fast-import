@@ -1,7 +1,9 @@
 package org.arxing.ui;
 
+import com.annimon.stream.Stream;
 import com.intellij.ui.CollectionComboBoxModel;
 
+import org.arxing.Printer;
 import org.arxing.Settings;
 import org.arxing.impl.LibTarget;
 
@@ -45,6 +47,7 @@ public class LibComboBox extends JComboBox<LibTarget> {
     }
 
     public void updateModels(List<LibTarget> newModels) {
+        newModels = Stream.of(newModels).filterNot(target -> target.toString().isEmpty()).distinctBy(LibTarget::toString).toList();
         needReshowPopup = model.getSize() != newModels.size();
         model.removeAll();
         model.add(newModels);
@@ -56,6 +59,7 @@ public class LibComboBox extends JComboBox<LibTarget> {
     }
 
     private void acceptSelected() {
+        Printer.print("p=%s", ((LibTarget) model.getSelectedItem()).getType());
         callback.onConfirm(currentText);
     }
 

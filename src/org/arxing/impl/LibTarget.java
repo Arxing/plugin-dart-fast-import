@@ -1,7 +1,9 @@
 package org.arxing.impl;
 
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
+import com.sun.javaws.exceptions.ErrorCodeResponseException;
 
 import org.arxing.Printer;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("Duplicates")
 public class LibTarget implements Comparable<LibTarget> {
     private LibInfo context;
     private LibType type;
@@ -62,6 +65,8 @@ public class LibTarget implements Comparable<LibTarget> {
     }
 
     public boolean isLeaf() {
+        if (type == LibType.dart)
+            return true;
         return !relativeUri.getPath().endsWith("/") && !relativeUri.getPath().isEmpty();
     }
 
@@ -101,6 +106,87 @@ public class LibTarget implements Comparable<LibTarget> {
 
     private String computeRelativePathAsLibRoot() {
         return libRootUri.relativize(absoluteUri.resolve(relativeUri)).getPath();
+    }
+
+    private List<PairSegment> collectSegments() {
+        List<PairSegment> segments = new ArrayList<>();
+        switch (type) {
+            case file:
+                calcPath().iterator().forEachRemaining(path -> {
+                    if (path.toString().isEmpty())
+                        return;
+                    segments.add(new PairSegment(path.toString(), true));
+                    if (!path.toString().endsWith(".dart"))
+                        segments.add(new PairSegment("/", false));
+                });
+                break;
+            case packages:
+                segments.add(new PairSegment("package", true));
+                segments.add(new PairSegment(":", false));
+                segments.add(new PairSegment(pkgName, true));
+                segments.add(new PairSegment("/", false));
+                calcPath().iterator().forEachRemaining(path -> {
+                    if (path.toString().isEmpty())
+                        return;
+                    segments.add(new PairSegment(path.toString(), true));
+                    if (!path.toString().endsWith(".dart"))
+                        segments.add(new PairSegment("/", false));
+                });
+                break;
+            case dart:
+                segments.add(new PairSegment("dart", true));
+                segments.add(new PairSegment(":", false));
+                segments.add(new PairSegment(pkgName, true));
+                break;
+        }
+        return segments;
+    }
+
+    public String calcRegex1() {
+        List<String> fragments = Stream.of(collectSegments()).map(o -> o.segment).toList();
+        String regex = "";
+        if (fragments.size() > 1) {
+            regex = Stream.of(fragments).collect(Collectors.joining("("));
+            regex += Stream.range(0, fragments.size() - 1).map(o -> ")?").collect(Collectors.joining());
+        } else if (fragments.size() == 1) {
+            regex = fragments.get(0);
+        }
+        return regex;
+    }
+
+    public String calcRegex2() {
+        String m = Stream.of(collectSegments()).map(pair -> String.format("(%s)?", pair.segment)).collect(Collectors.joining());
+        Printer.print("\"%s\"的正則=\"%s\"", toString(), m);
+        return m;
+    }
+
+    public static String wrapSegment(String segment) {
+        String r = "";
+        if (segment.length() > 1) {
+            r = Stream.of(segment.split("")).collect(Collectors.joining("("));
+            r += Stream.range(0, segment.length() - 1).map(o -> ")?").collect(Collectors.joining());
+        } else if (segment.length() == 1) {
+            r = segment;
+        }
+        return r;
+    }
+
+    private Path calcPath() {
+        switch (type) {
+            case file:
+                Path workFilePath = new File(context.getWorkFileUri()).toPath();
+                Path libFilePath = new File(absoluteUri.resolve(relativeUri)).toPath();
+                String finalPath = workFilePath.relativize(libFilePath).toString();
+                if (finalPath.startsWith("..\\")) {
+                    finalPath = finalPath.substring(3);
+                }
+                return new File(finalPath).toPath();
+            case packages:
+                return new File(computeRelativePathAsLibRoot()).toPath();
+            case dart:
+                break;
+        }
+        return null;
     }
 
     @Override public String toString() {
@@ -146,5 +232,16 @@ public class LibTarget implements Comparable<LibTarget> {
 
     @Override public int hashCode() {
         return Objects.hash(type, pkgName, libRootUri, absoluteUri, relativeUri);
+    }
+
+    private static class PairSegment {
+        String segment;
+        boolean handle;
+
+        public PairSegment(String segment, boolean handle) {
+            this.handle = handle;
+            this.segment = handle ? wrapSegment(segment) : segment;
+            this.segment = this.segment.replace(".", "\\.");
+        }
     }
 }
