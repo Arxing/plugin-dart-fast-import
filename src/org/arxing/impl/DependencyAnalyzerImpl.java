@@ -11,8 +11,10 @@ import org.arxing.Settings;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class DependencyAnalyzerImpl implements DependencyAnalyzer {
@@ -25,6 +27,8 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private Set<LibTarget> dependenciesCache = new HashSet<>();
     private Settings settings;
     private String workFilePath;
+    private Map<String, String> regex1Cache = new HashMap<>();
+    private Map<String, String> regex2Cache = new HashMap<>();
 
     public DependencyAnalyzerImpl(Project project) {
         if (project != null) {
@@ -43,9 +47,13 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
                 return true;
             if (s.contains(keyword))
                 return true;
-            if (keyword.matches(target.calcRegex2()))
+            if (!regex2Cache.containsKey(s))
+                regex2Cache.put(s, target.calcRegex2());
+            if (keyword.matches(regex2Cache.get(s)))
                 return true;
-            if (keyword.matches(target.calcRegex1()))
+            if (!regex1Cache.containsKey(s))
+                regex1Cache.put(s, target.calcRegex1());
+            if (keyword.matches(regex1Cache.get(s)))
                 return true;
             return false;
         };
