@@ -1,19 +1,12 @@
 package org.arxing.ui;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.intellij.ui.CollectionComboBoxModel;
-import com.intellij.ui.ComboBoxCompositeEditor;
-import com.intellij.ui.ComboboxEditorTextField;
 
-import org.arxing.Printer;
+import org.arxing.Settings;
 import org.arxing.impl.LibTarget;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.ComboBoxEditor;
@@ -28,8 +21,12 @@ public class LibComboBox extends JComboBox<LibTarget> {
     private String currentText;
     private LibComboBoxCallback callback;
     private int tmpIndex;
+    private String ENABLE_INPUT_REGEX = "[a-zA-Z0-9:/.'_]*";
+    private boolean needReshowPopup;
+    private boolean recursive;
 
-    public LibComboBox() {
+    public LibComboBox(boolean recursive) {
+        this.recursive = recursive;
         setModel(model);
         setEditor(new BasicComboBoxEditor());
         setEditable(true);
@@ -38,45 +35,39 @@ public class LibComboBox extends JComboBox<LibTarget> {
 
     private void resetState() {
         currentText = "";
+        needReshowPopup = true;
         selectFromMouse = true;
     }
 
     private void syncText() {
         textField.setText(currentText);
-//        Printer.print("同步文字: \"%s\"", currentText);
+        callback.onTextChanged(currentText);
     }
 
-    public void updateModels(List<LibTarget> models) {
+    public void updateModels(List<LibTarget> newModels) {
+        needReshowPopup = model.getSize() != newModels.size();
         model.removeAll();
-        model.add(models);
+        model.add(newModels);
         model.sort(LibTarget::compareTo);
-        //        Printer.print("==============================================================");
-        //        Printer.print(Stream.of(models).map(LibTarget::toString).collect(Collectors.joining("\n")));
     }
 
     public void setCallback(LibComboBoxCallback callback) {
         this.callback = callback;
     }
 
-    //    private void selectCurrent() {
-    //        Printer.print("selectCurrent(%d)", getSelectedIndex());
-    //        if (getSelectedIndex()==-1)
-    //            return;
-    //        LibTarget target = model.getElementAt(getSelectedIndex());
-    //        currentText = target.toString();
-    //        Printer.print("currentIndex=%d, currentText=%s", getSelectedIndex(), currentText);
-    //        callback.onTargetSelected(target);
-    //        showPopup();
-    //    }
-
     private void acceptSelected() {
         callback.onConfirm(currentText);
     }
 
     @Override public void showPopup() {
-        if (isPopupVisible())
-            hidePopup();
-        super.showPopup();
+        if (isPopupVisible()) {
+            if (needReshowPopup) {
+                hidePopup();
+                super.showPopup();
+            }
+        } else {
+            super.showPopup();
+        }
     }
 
     @Override public void setEditor(ComboBoxEditor anEditor) {
@@ -101,15 +92,16 @@ public class LibComboBox extends JComboBox<LibTarget> {
                 case KeyEvent.VK_DOWN:
                     break;
                 case KeyEvent.VK_ENTER:
-//                    Printer.print("按下enter, tmpIndex=%d", tmpIndex);
+                    needShowPopup = false;
                     if (tmpIndex != -1) {
-//                        Printer.print("設置為%d", tmpIndex);
-                        currentText = model.getElementAt(tmpIndex).toString();
-                        setSelectedIndex(tmpIndex);
                         LibTarget target = model.getElementAt(tmpIndex);
-                        List<LibTarget> extras = target.getRelationTargets();
-                        callback.onFindExtras(extras);
-                        updateModels(extras);
+                        currentText = target.toString();
+                        setSelectedIndex(tmpIndex);
+                        if (!recursive) {
+                            List<LibTarget> extras = target.getRelationTargets();
+                            callback.onFindExtras(extras);
+                            updateModels(extras);
+                        }
                         needShowPopup = !target.isLeaf();
                         tmpIndex = -1;
                     }
@@ -117,8 +109,11 @@ public class LibComboBox extends JComboBox<LibTarget> {
                 case KeyEvent.VK_ESCAPE:
                     callback.onEsc();
                     break;
-                default:
+                case KeyEvent.VK_BACK_SPACE:
                     inputEnable = true;
+                    break;
+                default:
+                    inputEnable = String.valueOf(e.getKeyChar()).matches(ENABLE_INPUT_REGEX);
                     break;
             }
         }
@@ -130,36 +125,56 @@ public class LibComboBox extends JComboBox<LibTarget> {
                 case KeyEvent.VK_ENTER:
                     if (needShowPopup) {
                         showPopup();
+                    } else {
+                        acceptSelected();
                     }
                     break;
                 default:
                     if (inputEnable) {
-//                        Printer.print("輸入了: \"%s\"", String.valueOf(e.getKeyChar()));
                         currentText = textField.getText();
                         callback.onKeywordChanged(currentText);
-                        syncText();
                         if (needShowPopup) {
                             showPopup();
                         }
                     }
+                    syncText();
                     break;
             }
         }
     };
+
+    @Override protected void selectedItemChanged() {
+        super.selectedItemChanged();
+        if (getComponentPopupMenu() != null)
+            showPopup();
+    }
 
     @Override public void setSelectedIndex(int anIndex) {
         if (anIndex == -1)
             return;
         tmpIndex = anIndex;
         super.setSelectedIndex(tmpIndex);
-//        Printer.print("setSelectedIndex: %d", tmpIndex);
         if (selectFromMouse) {
-            currentText = model.getElementAt(tmpIndex).toString();
+            LibTarget target = model.getElementAt(tmpIndex);
+            currentText = target.toString();
+            if (!recursive) {
+                List<LibTarget> extras = target.getRelationTargets();
+                callback.onFindExtras(extras);
+                updateModels(extras);
+            }
+            tmpIndex = -1;
+
+            if (target.isLeaf())
+                acceptSelected();
+            else
+                showPopup();
         }
         syncText();
     }
 
     public interface LibComboBoxCallback {
+
+        void onTextChanged(String text);
 
         void onFindExtras(List<LibTarget> extras);
 

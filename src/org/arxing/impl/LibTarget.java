@@ -1,18 +1,15 @@
 package org.arxing.impl;
 
-import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
 
-import org.apache.commons.io.FileUtils;
 import org.arxing.Printer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +20,7 @@ public class LibTarget implements Comparable<LibTarget> {
     private URI libRootUri;
     private URI absoluteUri;
     private URI relativeUri;
+    private URI projectRoot;
     private boolean isDirectory;
 
     private LibTarget(LibInfo context,
@@ -34,6 +32,7 @@ public class LibTarget implements Comparable<LibTarget> {
                       boolean isDirectory) {
         this.context = context;
         this.type = type;
+        this.projectRoot = context.getWorkFileUri();
         this.pkgName = pkgName;
         this.libRootUri = libRootUri;
         this.relativeUri = relativeUri;
@@ -58,22 +57,8 @@ public class LibTarget implements Comparable<LibTarget> {
         return new LibTarget(context, LibType.file, null, libRootUri, relativeUri, absoluteUri, isDirectory);
     }
 
-    private String backPath(String path) {
-        List<String> splits = Stream.of(path.split("/")).toList();
-        splits = Stream.of(splits).limit(splits.size() - 1).toList();
-        return Stream.of(splits).collect(Collectors.joining("/"));
-    }
-
-    public String backTarget() {
-        switch (type) {
-            case dart:
-                return "dart:";
-            case packages:
-                return "package:" + pkgName + "/" + backPath(relativeUri.getPath());
-            case file:
-                return backPath(relativeUri.getPath());
-        }
-        return null;
+    public LibType getType() {
+        return type;
     }
 
     public boolean isLeaf() {
@@ -108,6 +93,7 @@ public class LibTarget implements Comparable<LibTarget> {
     }
 
     private String handleDirectorySuffix(String src) {
+        src = src.replace("\\", "/");
         if (isDirectory && !src.endsWith("/"))
             return src + "/";
         return src;
@@ -124,7 +110,13 @@ public class LibTarget implements Comparable<LibTarget> {
             case packages:
                 return handleDirectorySuffix(String.format("package:%s/%s", pkgName, computeRelativePathAsLibRoot()));
             case file:
-                return handleDirectorySuffix(computeRelativePathAsLibRoot());
+                Path workFilePath = new File(context.getWorkFileUri()).toPath();
+                Path libFilePath = new File(absoluteUri.resolve(relativeUri)).toPath();
+                String finalPath = workFilePath.relativize(libFilePath).toString();
+                if (finalPath.startsWith("..\\")) {
+                    finalPath = finalPath.substring(3);
+                }
+                return handleDirectorySuffix(finalPath);
         }
         return super.toString();
     }

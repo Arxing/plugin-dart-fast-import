@@ -5,65 +5,94 @@ import com.annimon.stream.Stream;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
-import org.arxing.ui.MainDialog;
+import org.arxing.ui.LibDialog;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 public class ImportAction extends AnAction {
-
-    private static final Logger LOG = Logger.getInstance(ImportAction.class);
     private Project project;
+    private VirtualFile targetFile;
+    private LibDialog dialog;
+    private DependencyAnalyzer dependencyAnalyzer;
 
     @Override public void actionPerformed(AnActionEvent e) {
-        project = e.getData(DataKeys.PROJECT);
-        VirtualFile file = e.getData(DataKeys.VIRTUAL_FILE);
-
         try {
-            MainDialog mainDialog = new MainDialog(project, file, false);
-            mainDialog.setListener((kind, target) -> {
-                String finalTarget = kind + " '" + target + "';";
-                List<String> lines = FileUtil.loadLines(file.getPath(), "utf-8");
-                int insertLine = -1;
-                switch (kind) {
-                    case "import":
-                    case "export":
-                        insertLine = Stream.of(lines).anyMatch(line -> line.contains(target)) ? -1 : 0;
-                        break;
-                    case "part":
-                    case "part of":
-                        insertLine = Stream.of(lines)
-                                           .indexed()
-                                           .filter(pair -> pair.getSecond().matches("import '.+';"))
-                                           .map(stringIntPair -> stringIntPair.getFirst() + 1)
-                                           .findLast()
-                                           .orElse(0);
-                        break;
-                }
-                if (insertLine != -1)
-                    lines.add(insertLine, finalTarget);
-                String newContent = Stream.of(lines).collect(Collectors.joining("\n"));
-                FileUtil.writeToFile(new File(file.getPath()), newContent);
-                mainDialog.setVisible(false);
-                file.refresh(false, false);
-            });
-            mainDialog.setVisible(true);
-            mainDialog.attachCenter();
+            project = e.getData(DataKeys.PROJECT);
+            dependencyAnalyzer = DependencyAnalyzer.getInstance(project);
+            targetFile = e.getData(DataKeys.VIRTUAL_FILE);
+            dependencyAnalyzer.setWorkFilePath(targetFile.getPath());
+            if (targetFile == null || targetFile.getExtension() == null || !targetFile.getExtension().equals("dart"))
+                return;
+            dialog = new LibDialog(project);
+            dialog.setCallback(dialogCallback);
+            dialog.setVisible(true);
         } catch (Throwable e1) {
-            Messages.showErrorDialog(Stream.of(Arrays.asList(e1.getStackTrace()))
-                                           .map(StackTraceElement::toString)
-                                           .collect(com.annimon.stream.Collectors.joining("\n")), "title-exception");
+            handleError(e1);
         }
     }
 
-    @Override public void update(AnActionEvent e) {
-        super.update(e);
+    private void handleError(Throwable t) {
+        StringBuilder builder = new StringBuilder(t.getMessage());
+        builder.append(Stream.of(t.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\n")));
+        Messages.showErrorDialog(builder.toString(), "Dart Fast Import Exception");
+    }
+
+    private LibDialog.LibDialogCallback dialogCallback = (importsType, path) -> {
+        try {
+            handleAction(new File(targetFile.getPath()), importsType, path);
+            if (dialog != null)
+                dialog.setVisible(false);
+            targetFile.refresh(false, false);
+        } catch (Exception e) {
+            handleError(e);
+        }
+    };
+
+    private void handleAction(File targetFile, ImportsType importsType, String path) throws Exception {
+        List<String> lines = FileUtil.loadLines(targetFile, "utf-8");
+        int insertLine = -1;
+        switch (importsType) {
+            case IMPORT:
+                insertLine = Stream.of(lines)
+                                   .indexed()
+                                   .filter(pair -> pair.getSecond().matches("import '.+';"))
+                                   .map(pair -> pair.getFirst() + 1)
+                                   .findLast()
+                                   .orElse(0);
+                break;
+            case EXPORT:
+                insertLine = Stream.of(lines)
+                                   .indexed()
+                                   .filter(pair -> pair.getSecond().matches("export '.+';"))
+                                   .map(pair -> pair.getFirst() + 1)
+                                   .findLast()
+                                   .orElse(0);
+                break;
+            case PART:
+                insertLine = Stream.of(lines).indexed().filter(pair -> {
+                    String line = pair.getSecond();
+                    return line.matches("import '.+';") || line.matches("export '.+';") || line.matches("part '.+';");
+                }).map(pair -> pair.getFirst() + 1).findLast().orElse(0);
+                break;
+            case PART_OF:
+                insertLine = Stream.of(lines).indexed().filter(pair -> {
+                    String line = pair.getSecond();
+                    return line.matches("import '.+';") || line.matches("export '.+';") || line.matches("part of '.+';");
+                }).map(pair -> pair.getFirst() + 1).findLast().orElse(0);
+                break;
+        }
+        if (insertLine != -1) {
+            String insertContent = String.format("%s '%s';", importsType.getOption(), path);
+            lines.add(insertLine, insertContent);
+
+            String newFileContent = Stream.of(lines).collect(Collectors.joining("\n"));
+            FileUtil.writeToFile(targetFile, newFileContent);
+        }
     }
 }

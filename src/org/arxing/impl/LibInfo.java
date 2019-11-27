@@ -8,17 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LibInfo {
+    private URI workFileUri;
     private String pkgName;
     private File libRootFile;
     private LibType type;
 
-    public LibInfo(String libName, File rootFile, LibType type) {
+    public LibInfo(URI workFileUri, String libName, File rootFile, LibType type) {
+        this.workFileUri = workFileUri;
         this.pkgName = libName;
         this.type = type;
         this.libRootFile = rootFile;
     }
 
-    public List<LibTarget> getAllTargets() {
+    public URI getWorkFileUri() {
+        return workFileUri;
+    }
+
+    public List<LibTarget> getAllTargets(boolean recursive) {
         List<LibTarget> result = new ArrayList<>();
         switch (type) {
             case dart:
@@ -26,7 +32,7 @@ public class LibInfo {
                 break;
             case packages:
             case file:
-                visitChildInternal(result, false, libRootFile);
+                visitChildInternal(result, recursive, libRootFile);
                 break;
         }
         return result;

@@ -25,6 +25,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <projectService serviceInterface="org.arxing.DependencyAnalyzer" serviceImplementation="org.arxing.impl.DependencyAnalyzerImpl"/>
+        <projectService serviceInterface="org.arxing.Settings" serviceImplementation="org.arxing.impl.SettingsImpl"/>
     </extensions>
 
     <actions>

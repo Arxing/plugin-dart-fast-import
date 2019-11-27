@@ -4,8 +4,10 @@ import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 
 import org.arxing.DependencyAnalyzer;
+import org.arxing.Settings;
 
 import java.io.File;
 import java.net.URI;
@@ -15,15 +17,24 @@ import java.util.List;
 import java.util.Set;
 
 public class DependencyAnalyzerImpl implements DependencyAnalyzer {
-    private static String[] dartPackages = {
+    private static String[] DART_PACKAGES = {
             "typed_data", "io", "collection", "convert", "async", "developer", "ffi", "isolate", "math", "nativewrappers", "ui", "core",
     };
+    private static String TEST_PATH_ROOT = "W:\\flutter\\platform51_core";
     private Project project;
     private List<LibInfo> libs = new ArrayList<>();
     private Set<LibTarget> dependenciesCache = new HashSet<>();
+    private Settings settings;
+    private String workFilePath;
 
     public DependencyAnalyzerImpl(Project project) {
-        this.project = project;
+        if (project != null) {
+            this.project = project;
+            settings = Settings.getInstance(project);
+        } else {
+            settings = new SettingsImpl(null);
+            workFilePath = "W:\\flutter\\platform51_core\\lib\\env\\core_entrance.dart";
+        }
     }
 
     private Predicate<LibTarget> keywordFilter(String keyword) {
@@ -32,10 +43,17 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
         };
     }
 
-    @Override public List<LibTarget> getDependencies(String keyword) {
+    private URI getWorkFileUri() {
+        return new File(workFilePath).toURI();
+    }
+
+    @Override public List<LibTarget> getDependencies(List<LibType> types, String keyword) {
         if (keyword == null || keyword.isEmpty())
-            return Stream.of(dependenciesCache).toList();
-        return Stream.of(dependenciesCache).filter(keywordFilter(keyword)).toList();
+            return Stream.of(dependenciesCache).filter(target -> types == null || types.contains(target.getType())).toList();
+        return Stream.of(dependenciesCache)
+                     .filter(target -> types == null || types.contains(target.getType()))
+                     .filter(keywordFilter(keyword))
+                     .toList();
     }
 
     @Override public void updateDependencies() throws Exception {
@@ -54,14 +72,14 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
                 rootFile = new File(getProjectRootPath(), libPath);
                 type = LibType.file;
             }
-            LibInfo libInfo = new LibInfo(libName, rootFile, type);
+            LibInfo libInfo = new LibInfo(getWorkFileUri(), libName, rootFile, type);
             libs.add(libInfo);
         }
-        for (String dartPackage : dartPackages) {
-            libs.add(new LibInfo(dartPackage, null, LibType.dart));
+        for (String dartPackage : DART_PACKAGES) {
+            libs.add(new LibInfo(getWorkFileUri(), dartPackage, null, LibType.dart));
         }
         dependenciesCache.clear();
-        dependenciesCache.addAll(Stream.of(libs).flatMap(info -> Stream.of(info.getAllTargets())).toList());
+        dependenciesCache.addAll(Stream.of(libs).flatMap(info -> Stream.of(info.getAllTargets(settings.isRecursive()))).toList());
     }
 
     private String getPackagesFilePath() {
@@ -72,10 +90,15 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
         if (project != null)
             return project.getBasePath();
         else
-            return "W:\\flutter\\Platform51App-Core";
+            return TEST_PATH_ROOT;
     }
 
     @Override public void putExtraDependencies(List<LibTarget> extras) {
-        dependenciesCache.addAll(extras);
+        if (!settings.isRecursive())
+            dependenciesCache.addAll(extras);
+    }
+
+    @Override public void setWorkFilePath(String path) {
+        this.workFilePath = path;
     }
 }

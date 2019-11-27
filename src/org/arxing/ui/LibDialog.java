@@ -7,8 +7,11 @@ import com.intellij.util.ui.Centerizer;
 import org.arxing.DependencyAnalyzer;
 import org.arxing.ImportsType;
 import org.arxing.Printer;
+import org.arxing.Settings;
 import org.arxing.impl.DependencyAnalyzerImpl;
 import org.arxing.impl.LibTarget;
+import org.arxing.impl.LibType;
+import org.arxing.impl.SettingsImpl;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -16,11 +19,15 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -30,14 +37,17 @@ public class LibDialog extends JFrame {
     private ButtonGroup importsOptionGroup;
     private LibComboBox comboBox;
     private LibDialogCallback callback;
+    private JCheckBox cbRecursive;
 
     private ImportsType currentImportsType;
     private String currentPath;
     private DependencyAnalyzer dependencyAnalyzer;
+    private Settings settings;
 
     public LibDialog(Project project) throws Exception {
         super("Dart Fast Import");
         dependencyAnalyzer = project != null ? DependencyAnalyzer.getInstance(project) : new DependencyAnalyzerImpl(null);
+        settings = project != null ? Settings.getInstance(project) : new SettingsImpl(null);
         resetState();
         initUI();
         setResizable(false);
@@ -55,7 +65,7 @@ public class LibDialog extends JFrame {
 
     public void updateDependencies() throws Exception {
         dependencyAnalyzer.updateDependencies();
-        comboBox.updateModels(dependencyAnalyzer.getDependencies(null));
+        comboBox.updateModels(dependencyAnalyzer.getDependencies(null, null));
     }
 
     @Override public void setVisible(boolean b) {
@@ -63,6 +73,7 @@ public class LibDialog extends JFrame {
         if (b) {
             Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
             setLocation(dim.width / 2 - getSize().width / 2, dim.height / 2 - getSize().height / 2);
+            comboBox.requestFocus();
         }
     }
 
@@ -79,7 +90,7 @@ public class LibDialog extends JFrame {
             importsOptionPanel.add(radioButton);
         }
 
-        comboBox = new LibComboBox();
+        comboBox = new LibComboBox(settings.isRecursive());
         comboBox.setCallback(comboBoxCallback);
         comboBox.setPreferredSize(new Dimension(600, comboBox.getPreferredSize().height));
         Centerizer libPanel = new Centerizer(comboBox);
@@ -87,8 +98,10 @@ public class LibDialog extends JFrame {
         JPanel completeGroup = new JPanel(new VerticalLayout(10));
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("cancel");
+        cbRecursive = new JCheckBox("Recursive Mode", settings.isRecursive());
         completeGroup.add(okButton);
         completeGroup.add(cancelButton);
+        completeGroup.add(cbRecursive);
         Centerizer completePanel = new Centerizer(completeGroup);
 
         container = new JPanel(new HorizontalLayout(15));
@@ -101,13 +114,12 @@ public class LibDialog extends JFrame {
 
         okButton.addActionListener(okListener);
         cancelButton.addActionListener(cancelListener);
+        cbRecursive.addItemListener(recursiveListener);
     }
 
-    private ActionListener okListener = e -> {
-        if (callback == null)
-            return;
-        callback.confirm(currentImportsType, currentPath);
-    };
+    private ActionListener okListener = e -> callback.confirm(currentImportsType, currentPath);
+
+    private ItemListener recursiveListener = e -> settings.setRecursive(cbRecursive.isSelected());
 
     private ActionListener cancelListener = e -> setVisible(false);
 
@@ -116,17 +128,26 @@ public class LibDialog extends JFrame {
                                    .filter(type -> type.getOption().equals(e.getActionCommand()))
                                    .findSingle()
                                    .orElseThrow();
+        switch (currentImportsType) {
+            case PART:
+            case PART_OF:
+                comboBox.updateModels(dependencyAnalyzer.getDependencies(Collections.singletonList(LibType.file), null));
+                break;
+        }
     };
 
     private LibComboBox.LibComboBoxCallback comboBoxCallback = new LibComboBox.LibComboBoxCallback() {
+
+        @Override public void onTextChanged(String text) {
+            currentPath = text;
+        }
 
         @Override public void onFindExtras(List<LibTarget> extras) {
             dependencyAnalyzer.putExtraDependencies(extras);
         }
 
         @Override public void onKeywordChanged(String keyword) {
-            List<LibTarget> recommends = dependencyAnalyzer.getDependencies(keyword);
-            Printer.print("關鍵字: %s", keyword);
+            List<LibTarget> recommends = dependencyAnalyzer.getDependencies(null, keyword);
             comboBox.updateModels(recommends);
         }
 
