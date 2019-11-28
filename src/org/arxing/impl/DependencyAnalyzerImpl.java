@@ -21,7 +21,7 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private static String[] DART_PACKAGES = {
             "typed_data", "io", "collection", "convert", "async", "developer", "ffi", "isolate", "math", "nativewrappers", "ui", "core",
     };
-    private static String TEST_PATH_ROOT = "W:\\flutter\\FlutterApp\\flutter_app";
+    private static String TEST_PATH_ROOT = "W:\\flutter\\platform51_core";
     private Project project;
     private List<LibInfo> libs = new ArrayList<>();
     private Set<LibTarget> dependenciesCache = new HashSet<>();
@@ -36,7 +36,7 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
             settings = Settings.getInstance(project);
         } else {
             settings = new SettingsImpl(null);
-            workFilePath = "W:\\flutter\\FlutterApp\\flutter_app\\lib\\generated\\i18n.dart";
+            workFilePath = "W:\\flutter\\platform51_core\\lib\\business\\business_logic.dart";
         }
     }
 

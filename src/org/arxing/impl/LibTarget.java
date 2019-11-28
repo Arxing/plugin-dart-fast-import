@@ -108,16 +108,27 @@ public class LibTarget implements Comparable<LibTarget> {
         return libRootUri.relativize(absoluteUri.resolve(relativeUri)).getPath();
     }
 
+    private void handleSegment(List<PairSegment> segments, String wordSegment) {
+        String[] splits = wordSegment.split("_");
+        for (int i = 0; i < splits.length; i++) {
+            String seg = splits[i];
+            segments.add(new PairSegment(seg, true));
+            if (i == splits.length - 1)
+                segments.add(new PairSegment("_", false));
+        }
+        if (!wordSegment.endsWith("dart"))
+            segments.add(new PairSegment("/", false));
+    }
+
     private List<PairSegment> collectSegments() {
         List<PairSegment> segments = new ArrayList<>();
         switch (type) {
             case file:
                 calcPath().iterator().forEachRemaining(path -> {
-                    if (path.toString().isEmpty())
+                    String s = path.toString();
+                    if (s.isEmpty())
                         return;
-                    segments.add(new PairSegment(path.toString(), true));
-                    if (!path.toString().endsWith(".dart"))
-                        segments.add(new PairSegment("/", false));
+                    handleSegment(segments, s);
                 });
                 break;
             case packages:
@@ -126,11 +137,10 @@ public class LibTarget implements Comparable<LibTarget> {
                 segments.add(new PairSegment(pkgName, true));
                 segments.add(new PairSegment("/", false));
                 calcPath().iterator().forEachRemaining(path -> {
-                    if (path.toString().isEmpty())
+                    String s = path.toString();
+                    if (s.isEmpty())
                         return;
-                    segments.add(new PairSegment(path.toString(), true));
-                    if (!path.toString().endsWith(".dart"))
-                        segments.add(new PairSegment("/", false));
+                    handleSegment(segments, s);
                 });
                 break;
             case dart:
