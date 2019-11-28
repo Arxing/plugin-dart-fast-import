@@ -1,8 +1,8 @@
 <idea-plugin>
     <id>org.arxing.dart_fast_import</id>
     <name>Dart Fast Imports</name>
-    <version>1.0</version>
-    <vendor email="arxing@gmail.com" url="http://www.google.com">Anxer</vendor>
+    <version>1.0.0</version>
+    <vendor email="meiswind711108@gmail.com">Arxing</vendor>
 
     <description><![CDATA[
        This plugin can help you import file fast.
