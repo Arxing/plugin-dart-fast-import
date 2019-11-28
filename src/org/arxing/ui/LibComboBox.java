@@ -2,9 +2,9 @@ package org.arxing.ui;
 
 import com.annimon.stream.Stream;
 import com.intellij.ui.CollectionComboBoxModel;
+import com.intellij.util.PathUtilRt;
 
 import org.arxing.Printer;
-import org.arxing.Settings;
 import org.arxing.impl.LibTarget;
 
 import java.awt.event.KeyAdapter;
@@ -26,9 +26,11 @@ public class LibComboBox extends JComboBox<LibTarget> {
     private String ENABLE_INPUT_REGEX = "[a-zA-Z0-9:/.'_]*";
     private boolean needReshowPopup;
     private boolean recursive;
+    private boolean isWindows;
 
     public LibComboBox(boolean recursive) {
         this.recursive = recursive;
+        isWindows = PathUtilRt.Platform.CURRENT == PathUtilRt.Platform.WINDOWS;
         setModel(model);
         setEditor(new BasicComboBoxEditor());
         setEditable(true);
@@ -93,7 +95,20 @@ public class LibComboBox extends JComboBox<LibTarget> {
             int keyCode = e.getKeyCode();
             switch (keyCode) {
                 case KeyEvent.VK_UP:
+                    if (!isWindows) {
+                        if (tmpIndex > 0)
+                            setSelectedIndex(tmpIndex - 1);
+                        else
+                            setSelectedIndex(0);
+                    }
+                    break;
                 case KeyEvent.VK_DOWN:
+                    if (!isWindows) {
+                        if (tmpIndex < model.getSize() - 1)
+                            setSelectedIndex(tmpIndex + 1);
+                        else
+                            setSelectedIndex(model.getSize() - 1);
+                    }
                     break;
                 case KeyEvent.VK_ENTER:
                     needShowPopup = false;
