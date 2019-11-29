@@ -1,6 +1,6 @@
 <idea-plugin>
-    <id>org.arxing.dart_fast_import</id>
-    <name>Dart Fast Imports</name>
+    <id>org.arxing.dart_fast_import.beta</id>
+    <name>Dart Fast Imports-Beta</name>
     <version>1.0.1</version>
     <vendor email="meiswind711108@gmail.com">Arxing</vendor>
 
