@@ -46,19 +46,12 @@ public class ImportAction extends AnAction {
         Messages.showErrorDialog(builder.toString(), "Dart Fast Import Exception");
     }
 
-    private void saveFile() {
-        FileDocumentManager manager = FileDocumentManager.getInstance();
-        Document document = manager.getDocument(targetFile);
-        if (document != null)
-            manager.saveDocument(document);
-    }
-
     private LibDialog.LibDialogCallback dialogCallback = (importsType, path) -> {
         try {
             handleAction(new File(targetFile.getPath()), importsType, path);
             if (dialog != null)
                 dialog.setVisible(false);
-            saveFile();
+            project.save();
             targetFile.refresh(false, false);
         } catch (Exception e) {
             handleError(e);
@@ -100,8 +93,10 @@ public class ImportAction extends AnAction {
         }
         if (insertLine != -1) {
             String insertContent = String.format("%s '%s';", importsType.getOption(), path);
-            lines.add(insertLine, insertContent);
+            if (lines.contains(insertContent))
+                return;
 
+            lines.add(insertLine, insertContent);
             String newFileContent = Stream.of(lines).collect(Collectors.joining("\n"));
             FileUtil.writeToFile(targetFile, newFileContent);
         }
