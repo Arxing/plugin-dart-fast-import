@@ -5,10 +5,13 @@ import com.annimon.stream.Stream;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 
 import org.arxing.ui.LibDialog;
 
@@ -43,11 +46,19 @@ public class ImportAction extends AnAction {
         Messages.showErrorDialog(builder.toString(), "Dart Fast Import Exception");
     }
 
+    private void saveFile() {
+        FileDocumentManager manager = FileDocumentManager.getInstance();
+        Document document = manager.getDocument(targetFile);
+        if (document != null)
+            manager.saveDocument(document);
+    }
+
     private LibDialog.LibDialogCallback dialogCallback = (importsType, path) -> {
         try {
             handleAction(new File(targetFile.getPath()), importsType, path);
             if (dialog != null)
                 dialog.setVisible(false);
+            saveFile();
             targetFile.refresh(false, false);
         } catch (Exception e) {
             handleError(e);
