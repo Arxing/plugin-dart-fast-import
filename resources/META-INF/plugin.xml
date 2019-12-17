@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.arxing.dart_fast_import</id>
     <name>Dart Fast Imports</name>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <vendor email="meiswind711108@gmail.com">Arxing</vendor>
 
     <description><![CDATA[
@@ -14,7 +14,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="173.0"/>
+    <idea-version since-build="107.121"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -32,7 +32,7 @@
         <!-- Add your actions here -->
         <action id="DartFastImport.ImportAction" class="org.arxing.ImportAction" text="Dart Fast Import">
             <add-to-group group-id="EditMenu" anchor="first"/>
-            <keyboard-shortcut first-keystroke="$default" keymap="ctrl shift F1"/>
+            <keyboard-shortcut first-keystroke="ctrl shift F1" keymap="$default"/>
         </action>
     </actions>
 
