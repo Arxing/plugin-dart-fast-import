@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.arxing.dart_fast_import</id>
     <name>Dart Fast Imports</name>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <vendor email="meiswind711108@gmail.com">Arxing</vendor>
 
     <description><![CDATA[
@@ -9,18 +9,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
-       - no change
+       - 1.0.4
+         + bug fixed
     ]]>
     </change-notes>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="107.121"/>
-
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -36,4 +30,5 @@
         </action>
     </actions>
 
+    <depends>com.intellij.modules.java</depends>
 </idea-plugin>

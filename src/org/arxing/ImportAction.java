@@ -47,10 +47,7 @@ public class ImportAction extends AnAction {
     }
 
     private void saveFile() {
-        FileDocumentManager manager = FileDocumentManager.getInstance();
-        Document document = manager.getDocument(targetFile);
-        if (document != null)
-            manager.saveDocument(document);
+        project.save();
     }
 
     private LibDialog.LibDialogCallback dialogCallback = (importsType, path) -> {
@@ -106,6 +103,7 @@ public class ImportAction extends AnAction {
             String newFileContent = Stream.of(lines).collect(Collectors.joining("\n"));
             saveFile();
             FileUtil.writeToFile(targetFile, newFileContent);
+            this.targetFile.refresh(false, false);
         }
     }
 }

@@ -21,7 +21,6 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private static String[] DART_PACKAGES = {
             "typed_data", "io", "collection", "convert", "async", "developer", "ffi", "isolate", "math", "nativewrappers", "ui", "core",
     };
-    private static String TEST_PATH_ROOT = "W:\\flutter\\platform51_core";
     private Project project;
     private List<LibInfo> libs = new ArrayList<>();
     private Set<LibTarget> dependenciesCache = new HashSet<>();
@@ -31,13 +30,8 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     private Map<String, String> regex2Cache = new HashMap<>();
 
     public DependencyAnalyzerImpl(Project project) {
-        if (project != null) {
-            this.project = project;
-            settings = Settings.getInstance(project);
-        } else {
-            settings = new SettingsImpl(null);
-            workFilePath = "W:\\flutter\\platform51_core\\lib\\business\\business_logic.dart";
-        }
+        this.project = project;
+        settings = Settings.getInstance(project);
     }
 
     private Predicate<LibTarget> keywordFilter(String keyword) {
@@ -103,10 +97,7 @@ public class DependencyAnalyzerImpl implements DependencyAnalyzer {
     }
 
     @Override public String getProjectRootPath() {
-        if (project != null)
-            return project.getBasePath();
-        else
-            return TEST_PATH_ROOT;
+        return project.getBasePath();
     }
 
     @Override public void putExtraDependencies(List<LibTarget> extras) {

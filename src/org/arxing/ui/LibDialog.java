@@ -6,7 +6,6 @@ import com.intellij.util.ui.Centerizer;
 
 import org.arxing.DependencyAnalyzer;
 import org.arxing.ImportsType;
-import org.arxing.Printer;
 import org.arxing.Settings;
 import org.arxing.impl.DependencyAnalyzerImpl;
 import org.arxing.impl.LibTarget;
@@ -20,7 +19,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

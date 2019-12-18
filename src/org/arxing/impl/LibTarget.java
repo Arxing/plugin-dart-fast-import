@@ -3,9 +3,7 @@ package org.arxing.impl;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
-import com.sun.javaws.exceptions.ErrorCodeResponseException;
 
-import org.arxing.Printer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -166,7 +164,6 @@ public class LibTarget implements Comparable<LibTarget> {
 
     public String calcRegex2() {
         String m = Stream.of(collectSegments()).map(pair -> String.format("(%s)?", pair.segment)).collect(Collectors.joining());
-        Printer.print("\"%s\"的正則=\"%s\"", toString(), m);
         return m;
     }
 

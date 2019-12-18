@@ -4,7 +4,6 @@ import com.annimon.stream.Stream;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.util.PathUtilRt;
 
-import org.arxing.Printer;
 import org.arxing.impl.LibTarget;
 
 import java.awt.event.KeyAdapter;
@@ -61,7 +60,6 @@ public class LibComboBox extends JComboBox<LibTarget> {
     }
 
     private void acceptSelected() {
-        Printer.print("p=%s", ((LibTarget) model.getSelectedItem()).getType());
         callback.onConfirm(currentText);
     }
 
