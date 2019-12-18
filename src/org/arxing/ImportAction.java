@@ -4,14 +4,11 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 
 import org.arxing.ui.LibDialog;
 
@@ -26,9 +23,10 @@ public class ImportAction extends AnAction {
 
     @Override public void actionPerformed(AnActionEvent e) {
         try {
-            project = e.getData(DataKeys.PROJECT);
+
+            project = e.getProject();
             dependencyAnalyzer = DependencyAnalyzer.getInstance(project);
-            targetFile = e.getData(DataKeys.VIRTUAL_FILE);
+            targetFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
             dependencyAnalyzer.setWorkFilePath(targetFile.getPath());
             if (targetFile == null || targetFile.getExtension() == null || !targetFile.getExtension().equals("dart"))
                 return;
