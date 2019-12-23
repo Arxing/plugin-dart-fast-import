@@ -9,7 +9,8 @@ You can import anything while coding __without scrolling window to top__.
 
 # Install
 
-[Download](https://github.com/Arxing/plugin-dart-fast-import/raw/master/dart-fast-import.zip) it then open your IDE,
+[Download](https://github.com/Arxing/plugin-dart-fast-import/raw/master/dart-fast-import.zip) it or download in 
+[public repository](https://plugins.jetbrains.com/plugin/13430-dart-fast-imports/) then open your IDE,
 go to `File -> Settings -> Plugin -> Install Plugins From Disk`, select the `zip` file, finally, restart your IDE.
 
 # Usage
