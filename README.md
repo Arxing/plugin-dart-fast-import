@@ -1,7 +1,7 @@
 # Dart Fast Import
 
-`Dart Fast Import` is a intellij based(works in `Android Studio`, `Intellij Idea`) plugin that help you import fastly in `dart`. 
-You can import anything while coding __without scrolling window to top__.
+`Dart Fast Import` is a intellij-based(works in `Android Studio`, `Intellij Idea`) plugin that can improve importing faster during programming in `Dart`. 
+You can do importing anywhere during programming in `Dart` __without scrolling window to top__.
 
 # Demo
 
